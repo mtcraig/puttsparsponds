@@ -9,7 +9,7 @@ This is currently on hold until after I've stood up the basic API Sweepstakes to
 
 ### API
 
-Provisionally I've selected the SlashGolf API for this - $0 upfront for 20 calls per day to the scorecard and leaderboard, up to 250 calls to all per month. $20 if exceeding but unlikely for our use case.
+Using the ESPN Open APIs for this. Right now I'm not seeing any limitations, and obviously don't anticipate it changing, but it's also not locked down and could change at any time.
 
 ### Front-End
 
