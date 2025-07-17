@@ -46,6 +46,8 @@ Layout adapted from Ben Plimley's original as used for The Masters.
 
 #### Python
 
+Note: Due to issues with restoring saved player data back into a dictionary, I've reverted to a combined script. Perform the same actions as below but pay attention to modifying the required parameters throughout the code rather than just at the very top.
+
 Using the public ESPN API to fetch player information and daily scorecards. Technically these APIs are live data but I'm not querying that frequently to avoid getting red-flagged for abuse - 300 calls per day is more than enough!
 
 1) Run Players Update once per tournament
