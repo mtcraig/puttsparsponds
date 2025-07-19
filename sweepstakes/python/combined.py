@@ -49,7 +49,7 @@ print(athleteArray)
 # athleteDF.to_csv(athletePath)
 
 # Round to fetch:
-rnd = 1
+rnd = 3
 
 # Write Out Path
 writeOutPath = Path("C:/Users/zz1/OneDrive/Documents/PPP/Sweepstakes/" + tournName + "-R" + str(rnd) + ".xlsx")
@@ -66,18 +66,9 @@ while i < len(athleteArray):
     compResponse = requests.get(scoreURL)
     compResponse.raise_for_status()  # Raises an error for bad responses
     compData = compResponse.json()
-    # Parse out desired statistics
     
-    rndScore = compData["items"][rnd - 1]["displayValue"]
-    if rndScore[0] == '+':
-        rndScoreInvert = -int(re.sub('[+-]','',rndScore))
-    elif rndScore[0] == '-':
-        rndScoreInvert = int(re.sub('[+-]','',rndScore))
-    else:
-        rndScoreInvert = 0
-    # print(rndScoreInvert)
-
     # ScoreCard Processing
+    # Moved this up as this will always work
 
     athleteCurr = athleteArray[i]["name"]
 
@@ -87,42 +78,65 @@ while i < len(athleteArray):
     rndNormal = pd.json_normalize(rndDetail)
     # print(rndNormal)
 
-    # Find shot variants
-    scoreTypes = rndNormal["scoreType.name"].value_counts()
-    scoreDict = scoreTypes.to_dict()
-    # print(scoreDict)
-
-    ## Eagles
+    # If past the cut the round values are messed up for golfers out of the competition
+    # - Try the score value and if that succeeds continue with the rest
+    # Otherwise write 0 values out for all the relevant categories in the final dictionary
     try:
-        rndEagles = scoreDict['EAGLE']
+
+        # Parse out desired statistics
+        rndScore = compData["items"][rnd - 1]["displayValue"]
+        if rndScore[0] == '+':
+            rndScoreInvert = -int(re.sub('[+-]','',rndScore))
+        elif rndScore[0] == '-':
+            rndScoreInvert = int(re.sub('[+-]','',rndScore))
+        else:
+            rndScoreInvert = 0
+        # print(rndScoreInvert)
+
+        # Find shot variants
+        scoreTypes = rndNormal["scoreType.name"].value_counts()
+        scoreDict = scoreTypes.to_dict()
+        # print(scoreDict)
+
+        ## Eagles
+        try:
+            rndEagles = scoreDict['EAGLE']
+        except:
+            rndEagles = 0
+
+        ## Bogeys
+        try:
+            rndBogeys = scoreDict['BOGEY']
+        except:
+            rndBogeys = 0
+
+        ## Doubles
+        try:
+            rndDoubles = scoreDict['DOUBLE_BOGEY']
+        except:
+            rndDoubles = 0
+
+        ## Holes In One (HIO)
+        strokes = rndNormal["displayValue"].value_counts()
+        strokeDict = strokes.to_dict()
+        try:
+            rndHIO = strokeDict['1']
+        except KeyError:
+            rndHIO = 0
+
+        # Bogey Free?
+        if rndBogeys == 0 and rndDoubles == 0:
+            rndBFree = 'Yes'
+        else:
+            rndBFree = 'No'
+    
     except:
+        rndScoreInvert = 0
         rndEagles = 0
-
-    ## Bogeys
-    try:
-        rndBogeys = scoreDict['BOGEY']
-    except:
         rndBogeys = 0
-
-    ## Doubles
-    try:
-        rndDoubles = scoreDict['DOUBLE_BOGEY']
-    except:
         rndDoubles = 0
-
-    ## Holes In One (HIO)
-    strokes = rndNormal["displayValue"].value_counts()
-    strokeDict = strokes.to_dict()
-    try:
-        rndHIO = strokeDict['1']
-    except KeyError:
+        rndBFree = 'Cut'
         rndHIO = 0
-
-    # Bogey Free?
-    if rndBogeys == 0 and rndDoubles == 0:
-        rndBFree = 'Yes'
-    else:
-        rndBFree = 'No'
 
     compDict = {
         "name": athleteCurr,
@@ -130,7 +144,8 @@ while i < len(athleteArray):
         "eagles": rndEagles,
         "bogeys": rndBogeys,
         "doubles": rndDoubles,
-        "bogeyfree": rndBFree
+        "bogeyfree": rndBFree,
+        "holesinone": rndHIO
     }
     roundArray.append(compDict)
     print("Scorecard fetch loop " + str(i) + " completed fetch for " + athleteCurr)
