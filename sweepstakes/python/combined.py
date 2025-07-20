@@ -49,7 +49,7 @@ print(athleteArray)
 # athleteDF.to_csv(athletePath)
 
 # Round to fetch:
-rnd = 3
+rnd = 4
 
 # Write Out Path
 writeOutPath = Path("C:/Users/zz1/OneDrive/Documents/PPP/Sweepstakes/" + tournName + "-R" + str(rnd) + ".xlsx")
@@ -72,16 +72,17 @@ while i < len(athleteArray):
 
     athleteCurr = athleteArray[i]["name"]
 
-    rndDetail = compData["items"][rnd - 1]["linescores"]
-    # print(rndDetail)
-    
-    rndNormal = pd.json_normalize(rndDetail)
-    # print(rndNormal)
-
     # If past the cut the round values are messed up for golfers out of the competition
     # - Try the score value and if that succeeds continue with the rest
     # Otherwise write 0 values out for all the relevant categories in the final dictionary
     try:
+
+        # Added this here in case no linescores available
+        rndDetail = compData["items"][rnd - 1]["linescores"]
+        # print(rndDetail)
+        
+        rndNormal = pd.json_normalize(rndDetail)
+        # print(rndNormal)
 
         # Parse out desired statistics
         rndScore = compData["items"][rnd - 1]["displayValue"]
@@ -157,6 +158,6 @@ print(roundDF)
 
 # Write out to storage
 roundDF.to_excel(writeOutPath,
-                 sheet_name="R" + str(rnd))
+                sheet_name="R" + str(rnd))
 
 # END
