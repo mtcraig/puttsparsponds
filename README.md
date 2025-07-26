@@ -1,5 +1,8 @@
+![Putts Pars & Ponds Logo](/site/public/brand/ppp-logo.jpg)
+
 # puttsparsponds
-Development for the Putts Pars and Ponds golf society including proposed Masters Sweepstakes and Web platforms
+
+Development for the Putts Pars & Ponds golf society including proposed Masters Sweepstakes and Web platforms
 
 ## Website
 
