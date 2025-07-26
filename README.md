@@ -1,5 +1,7 @@
 ![Putts Pars & Ponds Logo](/site/public/brand/ppp-logo.jpg)
 
+<img src="/site/public/brand/ppp-logo.jpg" alt="Putts Pars & Ponds Logo" width="300"/>
+
 # puttsparsponds
 
 Development for the Putts Pars & Ponds golf society including proposed Masters Sweepstakes and Web platforms
