@@ -45,14 +45,14 @@ except:
 # Check for any updates to the active tournament
 
 tournNameUpdate = ''
-while tournNameUpdate.upper() not in ('Y','YES','N','NO'):
+while tournNameUpdate not in ('Y','YES','N','NO'):
     tournNameUpdate = input('Currently active tournament is: ' + tournFullName + ', would you like to update it?').upper()
 if tournNameUpdate in ('Y','YES'):
     tournFullNamePrev = tournFullName
     tournNamePrev = tournName
     tournFullName = ''
     while tournFullName == '':
-        tournFullName = input('Please provide the name of the new tournament to be run for:')
+        tournFullName = input('Please provide the name of the new tournament to be run for:').title()
     tournName = tournFullName.replace(' ','')
     print('Tournament updated from ' + tournFullNamePrev + ' (' + tournNamePrev + ') to ' + tournFullName + ' (' + tournName + ').')
     tournIDPrev = tournID
