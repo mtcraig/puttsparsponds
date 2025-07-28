@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# Putts Pars and Ponds Sweepstakes
+# Putts Pars & Ponds Sweepstakes
 # Lead Dev: Michael Craig
 # ------------------------------------------------------------------------------
 # Description:
@@ -13,6 +13,11 @@
 # ------------------------------------------------------------------------------
 #---|----1----|----2----|----3----|----4----|----5----|----6----|----7----|----8
 
+print('---------------------------------------------------------------------------')
+print('Putts, Pars & Ponds Sweepstakes')
+print('---------------------------------------------------------------------------')
+print('Importing required modules...')
+
 # ------------------------------------------------------------------------------
 # MODULES
 # ------------------------------------------------------------------------------
@@ -24,10 +29,16 @@ import re
 from pathlib import Path
 import openpyxl
 import time
+from datetime import date
+
+print('Done.')
 
 # ------------------------------------------------------------------------------
 # FETCH AND REQUEST UPDATES TO PROCESS SETTINGS
 # ------------------------------------------------------------------------------
+
+print('---------------------------------------------------------------------------')
+print('Importing settings...')
 
 # Import last settings
 
@@ -70,7 +81,11 @@ try:
 except:
     # Force exit to debug as the save json file should at least exist
     print('Error fetching last settings. Please debug before proceeding. Exiting...')
+    print('---------------------------------------------------------------------------')
     exit()
+
+print('Done.')
+print('---------------------------------------------------------------------------')
 
 # Function to target the desired league and pull back the latest tournament on their records
 # Not required to use the results of this fetch but will speed things up if it pulls back the right tournament!
@@ -107,7 +122,7 @@ while tournNameUpdate not in ('Y','YES','N','NO'):
         print('As no save data was found you will need to enter all details for the desired tournament.')
     # If there's attributes already then ask if an update is desired or not
     else:
-        tournNameUpdate = input('Currently active tournament is: ' + tournLeague.upper() + ': ' + tournFullName + ', would you like to update it? ').upper()
+        tournNameUpdate = input('Currently active tournament is: ' + tournLeague.upper() + ' - ' + tournFullName + ', would you like to update it? ').upper()
 if tournNameUpdate in ('Y','YES'):
     # If updating, store the last values and prompt for replacement
     tournLeaguePrev = tournLeague
@@ -153,7 +168,8 @@ if tournNameUpdate in ('Y','YES'):
     print('Setting update complete.')
 else:
     # Otherwise confirm no changes made and proceed
-    print('Continuing with the last used settings for ' + tournLeague.upper() + ': ' + tournFullName + '.')
+    print('Continuing with the last used settings for ' + tournLeague.upper() + ' - ' + tournFullName + '.')
+print('---------------------------------------------------------------------------')
 
 # Check for any updates to the active round
 
@@ -198,11 +214,15 @@ else:
         # Otherwise gracefully exit
         else:
             print('No round has been selected for either a first time or a repeat run - the process will now exit. If you have updated a new tournament, that information has not been saved. Exiting...')
+            print('---------------------------------------------------------------------------')
             exit()
+
+print('---------------------------------------------------------------------------')
 
 # Save the updated settings to the active save file
 
 if tournNameUpdate in ('Y','YES') or tournRoundUpdate in ('Y','YES') or tournRoundRerun in ('Y','YES'):
+    print('Updates accepted, saving...')
     tournSave = {
                     'saveLatest': {
                                     'tournamentLeague': tournLeague,
@@ -225,8 +245,11 @@ if tournNameUpdate in ('Y','YES') or tournRoundUpdate in ('Y','YES') or tournRou
         print('Tournament settings have been updated successfully! Moving onto the active API calls...')
     except:
         print('Failed to write out save data. Please debug before proceeding. Exiting...')
+        print('---------------------------------------------------------------------------')
+        exit()
 else:
     print('Proceeding to athlete data review...')
+print('---------------------------------------------------------------------------')
 
 # ------------------------------------------------------------------------------
 # RESTORE OR UPDATE ATHLETE DATA
@@ -256,7 +279,9 @@ except:
         print('The process will now query the ESPN API for active competitors in ' + tournFullName + '.')
     else:
         print('Please debug the athletes data file before proceeding. Exiting...')
+        print('---------------------------------------------------------------------------')
         exit()
+print('---------------------------------------------------------------------------')
 
 # Restore saved athlete data or do a new refresh for the active tournament
 
@@ -271,6 +296,8 @@ if athleteUpdate in ('N','NO'):
         print('Please debug the athletes data file before proceeding. Exiting...')
         exit()
 else:
+    print('Fetching athlete data for ' + tournFullName + '.')
+    print('---------------------------------------------------------------------------')
     # Perform API Call
     tournURL = 'http://sports.core.api.espn.com/v2/sports/golf/leagues/' + tournLeague + '/events/' + tournID + '/competitions/' + tournID + '?lang=en&region=us'
     tournResponse = requests.get(tournURL)
@@ -283,11 +310,10 @@ else:
     athleteDict = []
     while i < len(tournData['competitors']):
         athleteOrder = tournData['competitors'][i]['order']
-        athleteURL = tournData['competitors'][i]['athlete']
-        athleteID = int(list(athleteURL.values())[0].rstrip('/').split('/')[-1].split('? ')[0])
+        athleteID = int(tournData['competitors'][i]['id'])
 
         # Fetch Athlete Name
-        athleteURL = 'http://sports.core.api.espn.com/v2/sports/golf/leagues/' + tournLeague + '/seasons/2025/athletes/' + str(athleteID) + '?lang=en&region=us'
+        athleteURL = 'http://sports.core.api.espn.com/v2/sports/golf/leagues/' + tournLeague + '/seasons/' + str(date.today().year) + '/athletes/' + str(athleteID) + '?lang=en&region=us'
         athleteResponse = requests.get(athleteURL)
         athleteResponse.raise_for_status()  # Raises an error for bad responses
         athleteData = athleteResponse.json()  # Parse JSON response
@@ -301,6 +327,7 @@ else:
         athleteDict.append(athleteInfo)
         print('Competitor fetch loop ' + str(i) + ' completed for ' + athleteName + '.')
         i = i + 1
+print('---------------------------------------------------------------------------')
 
 # Save down the athlete data and perform integrity checks
 
@@ -316,6 +343,7 @@ if athleteUpdate in ('Y','YES'):
         time.sleep(2)
     except:
         print('Failed to write out athlete data for ' + tournFullName + '. Please debug before proceeding. Exiting...')
+        print('---------------------------------------------------------------------------')
         exit()
 
     # Validate that the new athlete data matches between the pre and post save states
@@ -327,6 +355,7 @@ if athleteUpdate in ('Y','YES'):
     except:
         print('Error fetching athletes in ' + athleteFileStr + '.')
         print('Please debug the athletes data file before proceeding. Exiting...')
+        print('---------------------------------------------------------------------------')
         exit()
     # If the pre-save and post-read dictionaries match exactly then integrity is confirmed...
     if athleteDict == athleteDictValidate:
@@ -340,16 +369,19 @@ if athleteUpdate in ('Y','YES'):
         print('athleteDictValidate:')
         print('-------------------------------')
         print(athleteDictValidate)
+        print('---------------------------------------------------------------------------')
         exit()
 # If no updates then can safely skip as it'll have passed this checkpoint before
 else:
     print('No update performed, skipping athlete data integrity check.')
+print('---------------------------------------------------------------------------')
 
 # ------------------------------------------------------------------------------
 # FETCH SCORING DATA FOR THE REQUESTED ROUND
 # ------------------------------------------------------------------------------
 
 print('Fetching scoring data for ' + tournFullName + ' R' + str(tournRound) + '.')
+print('---------------------------------------------------------------------------')
 
 # Write Out Path
 writeOutPathStr = '../data/rounds/round' + str(tournRound) + '-' + tournID + '.xlsx'
@@ -458,6 +490,10 @@ roundDF = pd.DataFrame(roundArray)
 
 # Write out to storage
 
+print('---------------------------------------------------------------------------')
+print('Saving scorecard data...')
+print('---------------------------------------------------------------------------')
+
 try:
     roundDF.to_excel(writeOutPath,
                     sheet_name='R' + str(tournRound))
@@ -465,8 +501,9 @@ try:
 except:
     print('There was an error writing round data to ' + writeOutPathStr + '.')
 
-
+print('---------------------------------------------------------------------------')
 print('Run completed for ' + tournFullName + ' R' + str(tournRound) + '. Exiting...')
+print('---------------------------------------------------------------------------')
 exit()
 
 # ------------------------------------------------------------------------------
