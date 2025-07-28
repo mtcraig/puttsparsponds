@@ -195,7 +195,7 @@ else:
             tournRoundUpdate = input('The last round processed was R' + str(tournRound) + ', would you like to proceed to R' + str(tournRound + 1) + '? ').upper()
     if tournRoundUpdate in ('Y','YES'):
         # If a round update was requested then increment the round number and inform the user
-        tournRound + 1
+        tournRound = tournRound + 1
         if tournRound == 1:
             print('The process will be run for R' + str(tournRound) + ' of the tournament.')
         else:
@@ -384,7 +384,7 @@ print('Fetching scoring data for ' + tournFullName + ' R' + str(tournRound) + '.
 print('---------------------------------------------------------------------------')
 
 # Write Out Path
-writeOutPathStr = '../data/rounds/round' + str(tournRound) + '-' + tournID + '.xlsx'
+writeOutPathStr = '../data/rounds/tourn-' + tournID + '-round' + str(tournRound) + '.xlsx'
 writeOutPath = Path(writeOutPathStr)
 
 # FETCH SCORES AND STATS
