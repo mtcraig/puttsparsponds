@@ -30,6 +30,7 @@ from pathlib import Path
 import openpyxl
 import time
 from datetime import date
+import sys
 
 print('Done.')
 
@@ -82,7 +83,7 @@ except:
     # Force exit to debug as the save json file should at least exist
     print('Error fetching last settings. Please debug before proceeding. Exiting...')
     print('---------------------------------------------------------------------------')
-    exit()
+    sys.exit()
 
 print('Done.')
 print('---------------------------------------------------------------------------')
@@ -185,7 +186,7 @@ if tournRound == 4:
         print('Rerunning for R' + str(tournRound) + '.')
     else:
         print('All rounds for ' + tournFullName + ' have been completed. Exiting...')
-        exit()
+        sys.exit()
 else:
     while tournRoundUpdate not in ('Y','YES','N','NO'):
         # If the round number is the default then no rounds have happened yet, so prompt to confirm round 1 is the right thing
@@ -215,7 +216,7 @@ else:
         else:
             print('No round has been selected for either a first time or a repeat run - the process will now exit. If you have updated a new tournament, that information has not been saved. Exiting...')
             print('---------------------------------------------------------------------------')
-            exit()
+            sys.exit()
 
 print('---------------------------------------------------------------------------')
 
@@ -246,7 +247,7 @@ if tournNameUpdate in ('Y','YES') or tournRoundUpdate in ('Y','YES') or tournRou
     except:
         print('Failed to write out save data. Please debug before proceeding. Exiting...')
         print('---------------------------------------------------------------------------')
-        exit()
+        sys.exit()
 else:
     print('Proceeding to athlete data review...')
 print('---------------------------------------------------------------------------')
@@ -280,7 +281,7 @@ except:
     else:
         print('Please debug the athletes data file before proceeding. Exiting...')
         print('---------------------------------------------------------------------------')
-        exit()
+        sys.exit()
 print('---------------------------------------------------------------------------')
 
 # Restore saved athlete data or do a new refresh for the active tournament
@@ -294,7 +295,7 @@ if athleteUpdate in ('N','NO'):
     except:
         print('Error fetching athletes in ' + athleteFile + '.')
         print('Please debug the athletes data file before proceeding. Exiting...')
-        exit()
+        sys.exit()
 else:
     print('Fetching athlete data for ' + tournFullName + '.')
     print('---------------------------------------------------------------------------')
@@ -344,7 +345,7 @@ if athleteUpdate in ('Y','YES'):
     except:
         print('Failed to write out athlete data for ' + tournFullName + '. Please debug before proceeding. Exiting...')
         print('---------------------------------------------------------------------------')
-        exit()
+        sys.exit()
 
     # Validate that the new athlete data matches between the pre and post save states
     print('Validating athlete data integrity following update...')
@@ -356,7 +357,7 @@ if athleteUpdate in ('Y','YES'):
         print('Error fetching athletes in ' + athleteFileStr + '.')
         print('Please debug the athletes data file before proceeding. Exiting...')
         print('---------------------------------------------------------------------------')
-        exit()
+        sys.exit()
     # If the pre-save and post-read dictionaries match exactly then integrity is confirmed...
     if athleteDict == athleteDictValidate:
         print('Athlete data integrity verified for ' + tournFullName + ' (' + str(len(athleteDictValidate)) + ' competitors).')
@@ -370,7 +371,7 @@ if athleteUpdate in ('Y','YES'):
         print('-------------------------------')
         print(athleteDictValidate)
         print('---------------------------------------------------------------------------')
-        exit()
+        sys.exit()
 # If no updates then can safely skip as it'll have passed this checkpoint before
 else:
     print('No update performed, skipping athlete data integrity check.')
@@ -504,7 +505,7 @@ except:
 print('---------------------------------------------------------------------------')
 print('Run completed for ' + tournFullName + ' R' + str(tournRound) + '. Exiting...')
 print('---------------------------------------------------------------------------')
-exit()
+sys.exit()
 
 # ------------------------------------------------------------------------------
 # END
