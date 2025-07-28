@@ -69,11 +69,16 @@ This script was used for The Open 2025 throughout (see version as of that tourna
 1) Import modules
 2) Fetch and request updates to process settings
     - Import last settings
-    - Check for any updates to the active tournament
-    - Check for any updates to the active round
+    - Ask for any updates to the active tournament
+        - If so, the process will now ask for the desired league (confirmed support for both PGA and LIV) and perform an API call to get the latest available one
+        - If that's the right one, use it. If not, original process applies.
+        - The process will also now attempt to call the tournament API using manually provided details - if it fails it'll reset and ask you to try again.
+    - Ask for any updates to the active round
+        - This now properly handles round increments, first rounds, and round specific requests
     - Save the updated settings to the active save file
+        - Also backs up prior settings if you've changed the tournament
 3) Restore or update athlete data
-    - Check for existing athlete data and ask if a request is desired
+    - Check for existing athlete data and ask if an update is desired
     - Restore saved athlete data or do a new refresh for the active tournament
         - If refreshing:
             - Perform API Call
