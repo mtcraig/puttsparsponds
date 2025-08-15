@@ -1,9 +1,12 @@
-# puttsparsponds
-Development for the Putts Pars and Ponds golf society including proposed Masters Sweepstakes and Web platforms
+<img src="/site/public/brand/ppp-logo.jpg" alt="Putts Pars & Ponds Logo" width="300"/>
+
+# Welcome to Putts, Pars & Ponds!
+
+This repository contains all development for the Putts Pars & Ponds golf society including proposed Masters Sweepstakes and Web platforms
 
 ## Website
 
-This is currently on hold until after I've stood up the basic API Sweepstakes tools for the July Open. In the future I'll migrate that implementation into the planned Sweepstakes section in the Members Lounge.
+This is currently on hold until after I've stood up the basic API Sweepstakes tools for the July Open. In the future I'll migrate that implementation into the planned Sweepstakes section in the Members Lounge. Fundamental architecture has been set up with a view to building a first draft in Node.JS / Express JS / EJS, but I anticipate eventually moving things into React once I've had the chance to go through that end to end process with my personal website first.
 
 ## Sweepstakes
 
@@ -13,7 +16,7 @@ Using the ESPN Open APIs for this. Right now I'm not seeing any limitations, and
 
 ### Front-End
 
-Layout adapted from Ben Plimley's original as used for The Masters.
+Layout adapted from Ben Plimley's original as used for The Masters 2025.
 
 #### Tabs
 
@@ -46,16 +49,63 @@ Layout adapted from Ben Plimley's original as used for The Masters.
 
 #### Python
 
-Note: Due to issues with restoring saved player data back into a dictionary, I've reverted to a combined script. Perform the same actions as below but pay attention to modifying the required parameters throughout the code rather than just at the very top.
+Note: Re-engineered 2025-07-26 post The Open 2025 tournament to provide an easier experience for updating and running for future tournaments and rounds.
 
-Using the public ESPN API to fetch player information and daily scorecards. Technically these APIs are live data but I'm not querying that frequently to avoid getting red-flagged for abuse - 300 calls per day is more than enough!
+The sweepstakes logic uses the public ESPN API to fetch player information and daily scorecards. Technically these APIs are live data but I'm not going to be querying that frequently to avoid getting red-flagged for abuse.
+Initial code performed around 300 calls per day, having to refresh both the athletes and their scorecards every time - as of the latest release, this has been reduced so that the first round will perform those 300, but future rounds should only perform around 150 for scorecards only (unless an athlete refresh is actively requested by the user).
 
-1) Run Players Update once per tournament
-2) Run Round Update once per day after end of play
+A process call will therefore generally:
+1) Run a Player Update once per tournament
+2) Run a Round Update once per day after end of play
 
-Copy data from the Round Update excel outputs into the associated Round tabs in the Sweepstakes spreadsheet. Everything should then calculate scores for members accordingly.
+After completion, just copy data from the Round Update excel outputs into the associated Round tabs in the Sweepstakes spreadsheet. Everything should then calculate scores for members and their picks accordingly.
 
-##### espn-api-players-update.py
+##### Active Codebase
+
+###### espn-api-full.py
+
+This script was used for The Open 2025 throughout (see version as of that tournament date) and has been updated to support user prompts to make future tournaments hassle free in translating between events and rounds. Steps for the script are as follows:
+
+1) Import modules
+2) Fetch and request updates to process settings
+    - Import last settings
+    - Ask for any updates to the active tournament
+        - If so, the process will now ask for the desired league (confirmed support for both PGA and LIV) and perform an API call to get the latest available one
+        - If that's the right one, use it. If not, original process applies.
+        - The process will also now attempt to call the tournament API using manually provided details - if it fails it'll reset and ask you to try again.
+    - Ask for any updates to the active round
+        - This now properly handles round increments, first rounds, and round specific requests
+    - Save the updated settings to the active save file
+        - Also backs up prior settings if you've changed the tournament
+3) Restore or update athlete data
+    - Check for existing athlete data and ask if an update is desired
+    - Restore saved athlete data or do a new refresh for the active tournament
+        - If refreshing:
+            - Perform API Call
+            - Loop through for all competitors to fetch their order number and athlete ID required to fetch individual score details
+            - Write out to storage
+            - Validate that the new athlete data matches between the pre and post save states
+4) Fetch scoring data for the requested round
+    - Loop through for all competitors to fetch their statistics
+        - For each competitor, query the competitors tournament API to get all tournament data for them
+        - ScoreCard Processing
+            - Invert the round score (displayValue) so that +1 loses 1 point (-1) and -1 gains you a point (+1)
+            - Access the linescores and calculate the number of shot types for Eagles, Bogeys and Doubles
+            - Calculate Holes in One by checking the number of holes where the number of shots was 1
+            - Calculate Bogey Free by checking the results of the Bogeys and Doubles calculation above
+            - Store all stats in a dictionary with the player name, and append into an array (then dataframe)
+    - Convert round output into an dataframe for export
+    - Write out to storage
+
+###### To Do:
+
+- I'd like to expand the codebase to perform the full array of scoring updates including aggregation up to member level to migrate the platform away from Excel and make it possible to compile the python scripting into a single codebase, but this will absolutely require further refactoring to first introduce a proper GUI and then build out proper inputs, tables and charting, so this is a really big job!
+
+##### Archived Codebase
+
+These legacy scripts were initially developed for The Open 2025. These were replaced by a combined script due to issues with the save/restore logic on Day 1. That combined script has evolved into espn-api-full.py and as such the rest of the commit logs can be found under that script. Steps for these original Python scripts were defined as follows:
+
+###### espn-api-players-update.py
 
 - When running:
     - Set the tournament ID (see the URL for the active tournament leaderboard on ESPN)
@@ -66,7 +116,7 @@ Copy data from the Round Update excel outputs into the associated Round tabs in 
     - From these Athlete IDs, query the athlete API to gather competitor names
     - Append all competitors into an array, convert to a dataframe, and write out to a CSV to remove the need for future API calls for the same tournament
 
-##### espn-api-round-update.py
+###### espn-api-round-update.py
 
 - When running:
     - Set the tournament ID (see the URL for the active tournament leaderboard on ESPN)
