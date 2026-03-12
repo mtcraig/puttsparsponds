@@ -175,6 +175,7 @@ print('-------------------------------------------------------------------------
 # Check for any updates to the active round
 
 tournRoundUpdate = ''
+newTourn = False
 if tournRound == 4:
     # If the last round ran was the last one then prompt for possible reruns of any past rounds
     while tournRoundUpdate not in ('Y','YES','N','NO'):
@@ -192,11 +193,15 @@ else:
         # If the round number is the default then no rounds have happened yet, so prompt to confirm round 1 is the right thing
         if tournNameUpdate in ('Y','YES'):
             tournRoundUpdate = input('No rounds have been processed yet, would you like to proceed with R' + str(tournRound) + '? ').upper()
+            newTourn = True
         else:
             tournRoundUpdate = input('The last round processed was R' + str(tournRound) + ', would you like to proceed to R' + str(tournRound + 1) + '? ').upper()
     if tournRoundUpdate in ('Y','YES'):
         # If a round update was requested then increment the round number and inform the user
-        tournRound = tournRound + 1
+        if newTourn == True:
+            tournRound = 1
+        else:
+            tournRound = tournRound + 1
         if tournRound == 1:
             print('The process will be run for R' + str(tournRound) + ' of the tournament.')
         else:
@@ -326,7 +331,7 @@ else:
             'name': athleteName
         }
         athleteDict.append(athleteInfo)
-        print('Competitor fetch loop ' + str(i) + ' completed for ' + athleteName + '.')
+        print('Competitor fetch loop ' + str(i+1) + ' completed for ' + athleteName + '.')
         i = i + 1
 print('---------------------------------------------------------------------------')
 
@@ -482,7 +487,7 @@ while i < len(athleteDict):
         'holesinone': tournRoundHIO
     }
     roundArray.append(compDict)
-    print('Scorecard fetch loop ' + str(i) + ' completed fetch for ' + athleteCurr)
+    print('Scorecard fetch loop ' + str(i+1) + ' completed fetch for ' + athleteCurr)
     i = i + 1
 
 # Convert round output into an dataframe for export
