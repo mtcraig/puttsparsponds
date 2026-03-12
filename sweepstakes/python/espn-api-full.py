@@ -106,11 +106,11 @@ def latestTourn():
             tournIDLatest = tournDataLatest['id']
             tournFullNameLatest = tournDataLatest['name']
         except:
-            return ('fail','')
             print(failMsg)
+            return ('fail','')
     except:
-        return('fail','')
         print(failMsg)
+        return('fail','')
     return (tournIDLatest, tournFullNameLatest)
 
 # Check for any updates to the active tournament
