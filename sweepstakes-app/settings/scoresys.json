@@ -1,0 +1,15 @@
+{
+  "masters": {
+    "hole_in_one": 10,
+    "better": 1,
+    "albatross": 1,
+    "eagle": 1,
+    "birdie": 0,
+    "par": 0,
+    "bogey": 0,
+    "double_bogey": -1,
+    "worse": -1,
+    "to_par_scaler": 1,
+    "make_cut": 5
+  }
+}
