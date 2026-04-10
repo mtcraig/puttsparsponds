@@ -3,6 +3,7 @@
     ✅ allow user entry
     - use this value in fetch_tournament to get tournament data, see api-full
     - message box containing the available tournaments or just the top latest available gets dumped into the info panel?
+    - add fetch latest
 
 - round data
     - default new tournament to 0
