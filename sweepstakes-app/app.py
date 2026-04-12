@@ -19,7 +19,7 @@ class GolfSweepstakesApp(tk.Tk):
         super().__init__()
 
         self.title("Par-Perfect Sweepstakes Manager")
-        self.geometry("1100x950")
+        self.geometry("1100x975")
         self.configure(bg=BG_MAIN)
 
         # SET APPLICATION ICON (Taskbar/Window Header)

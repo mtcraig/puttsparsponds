@@ -5,7 +5,7 @@ from utils.gui.styling import *
 
 class ManagePlayersPage(tk.Frame):
     def __init__(self, parent, controller):
-        super().__init__(parent, bg=BG_CARD)
+        super().__init__(parent, bg=BG_CARD, highlightbackground=ACCENT_GREEN, highlightthickness=2)
         tk.Label(self, text="Manage Participants", font=("Segoe UI", 18, "bold"), bg=BG_CARD, fg=ACCENT_GREEN).pack(pady=20)
 
         form_frame = tk.Frame(self, bg=BG_CARD)
@@ -39,17 +39,17 @@ class ManagePlayersPage(tk.Frame):
             self.tree.column(col, width=90)
         self.tree.pack(pady=10, padx=20, fill="both")
 
-        tk.Button(self, text="Back to Control Panel", command=lambda: controller.show_frame("HomePage")).pack(pady=10)
+        StyledButton(self, "BACK", ACCENT_GREEN, lambda: controller.show_frame("HomePage")).pack(side="bottom", pady=20)
 
     def add_player(self):
         name = self.name_entry.get()
-        group = self.prize_entry.get()
+        group = self.prize_combo.get()
         picks = [cb.get() for cb in self.dropdowns]
         
         if name and group and all(picks):
             self.tree.insert("", "end", values=(name, group, *picks))
             self.name_entry.delete(0, tk.END)
-            self.prize_entry.delete(0, tk.END)
+            self.prize_combo.delete(0, tk.END)
             for cb in self.dropdowns: cb.set('')
         else:
             messagebox.showwarning("Input Error", "Please enter a name, group, and all 5 picks.")

@@ -42,12 +42,14 @@ class HomePage(tk.Frame):
         src_entry.value = controller.api.get()
         src_entry.pack(side="left", padx=10)
 
-        StyledButton(fetch_frame, "🔎 SEARCH", "#fb8c00", lambda: search_tournament(self), width=25).pack(side="right", padx=10)
-
+        tk.Label(fetch_frame, text="Tournament ID:", bg=BG_CARD, font=("Segoe UI", 9)).pack(side="left", padx=10)
         search_entry = tk.Entry(fetch_frame, textvariable=self.controller.search_id, width=25, relief="solid", bd=1)
         search_entry.value = ""
-        search_entry.pack(side="right", padx=10)
-        tk.Label(fetch_frame, text="Tournament ID:", bg=BG_CARD, font=("Segoe UI", 9)).pack(side="right", padx=10)
+        search_entry.pack(side="left", padx=10)
+        
+        StyledButton(fetch_frame, "⭐ GET LATEST", "#fb8c00", lambda: search_tournament(self), width=15).pack(side="right", padx=10)
+
+        StyledButton(fetch_frame, "🔎 SEARCH", "#fb8c00", lambda: search_tournament(self), width=15).pack(side="right", padx=10)
 
         settings_frame = tk.LabelFrame(self, text=" Tournament Settings", font=("Segoe UI", 10, "bold"),
                                     bg=BG_CARD, padx=20, pady=15, fg=ACCENT_BLUE)
