@@ -1,12 +1,12 @@
 - add box next to the API for tournament id
     ✅ empty to start and when data is loaded
     ✅ allow user entry
-    - use this value in fetch_tournament to get tournament data, see api-full
-    - message box containing the available tournaments or just the top latest available gets dumped into the info panel?
-    - add fetch latest
+    ✅ use this value in fetch_tournament to get tournament data, see api-full
+    ✅ message box containing the available tournaments or just the top latest available gets dumped into the info panel?
+    ✅ add fetch latest
 
 - round data
-    - default new tournament to 0
+    ✅ default new tournament to 0
     - check for available round data and set the value to +1 of that or 4 max
 
 - add save functionality
@@ -28,9 +28,9 @@
     - add share button to export the pick pools
 
 - get players
-    - have this call my code from api-full to get the athlete data and save it to the folder
+    ✅ have this call my code from api-full to get the athlete data and save it to the folder
     - progress bar to show once the total # is known
-    - confirm when loaded
+    ✅ confirm when loaded
 
 - run round
     - have this call my code from api-full to get the athlete data and save it to the folder
@@ -80,6 +80,11 @@
     - settings
         - core/admin
     - data
+        - starting point with these files:
+            - athletes
+            - odds
+            - rounds 1 / 2 / 3 / 4 separately
+            - picks
         - change from athletes/ + rounds/ to tournid/ containing all info
             - players
                 - give players a uid
@@ -87,5 +92,5 @@
             - golfers
             - rounds
             - r/r scoring w/ uid to connect to players
-    - log
-        - to print session activity to (replace print steps w/ write to ends)
+    ✅ log
+        ✅ to print session activity to (replace print steps w/ write to ends)
