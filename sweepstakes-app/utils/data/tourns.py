@@ -62,19 +62,20 @@ def use_tournament(self):
 
 def search_tournament(self):
     try:
-        tournURL = 'http://sports.core.api.espn.com/v2/sports/golf/leagues/' + self.controller.tournament_league.get().lower() + '/events/' + self.controller.tournament_id.get() + '?lang=en&region=us'
-        tournResponse = requests.get(tournURL)
-        tournResponse.raise_for_status()  # Raises an error for bad responses
-        tournData = tournResponse.json()  # Parse JSON response
-        tournID = tournData['id']
-        tournFullName = tournData['name']
+        t_inf = {"t_league": self.controller.tournament_league.get().lower(), "t_id": self.controller.tournament_id.get()}
+        t_url = f"http://sports.core.api.espn.com/v2/sports/golf/leagues/{t_inf['t_league']}/events/{t_inf['t_id']}?lang=en&region=us"
+        t_resp = requests.get(t_url)
+        t_resp.raise_for_status()  # Raises an error for bad responses
+        t_dat = t_resp.json()  # Parse JSON response
+        t_id = t_dat['id']
+        t_name = t_dat['name']
     except Exception as e:
         failMsg = "ESPN API error: Search using provided ID failed." + f" Details: {e}"
         add_session_entry(failMsg)
         messagebox.showwarning("Error", failMsg)
         
     # Update the global controller variables
-    self.controller.tournament_name.set(tournFullName)
+    self.controller.tournament_name.set(t_name)
     self.controller.current_round.set(0) # Default to round 0 for latest
 
 def latest_tournament(self):
