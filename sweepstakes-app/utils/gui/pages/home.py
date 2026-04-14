@@ -73,7 +73,7 @@ class HomePage(tk.Frame):
                                     bg=BG_CARD, padx=20, pady=15, fg=ACCENT_BLUE)
         ops_frame.pack(pady=20, fill="x", padx=40)
         StyledButton(ops_frame, "⛳ GET ODDS", ACCENT_BLUE, None).grid(row=0, column=0, sticky="ew", padx=10)
-        StyledButton(ops_frame, "👥 GET ENTRANTS", ACCENT_BLUE, lambda: fetch_athlete_data(self)).grid(row=0, column=1, sticky="ew", padx=10)
+        StyledButton(ops_frame, "👥 GET ENTRANTS", ACCENT_BLUE, lambda: fetch_athlete_data(self.controller.tournament_league.get().lower(),self.controller.tournament_id.get(),self.controller.tournament_name.get())).grid(row=0, column=1, sticky="ew", padx=10)
         StyledButton(ops_frame, "⛳ RUN ROUND", ACCENT_GREEN, None).grid(row=0, column=2, sticky="ew", padx=10)
 
         # 2. Tell the frame to give equal weight to all three columns

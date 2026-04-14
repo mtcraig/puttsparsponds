@@ -79,17 +79,20 @@ def search_tournament(self):
 
 def latest_tournament(self):
     try:
-        leagueURL = 'http://sports.core.api.espn.com/v2/sports/golf/leagues/' + self.controller.tournament_league.get().lower() + '/events?lang=en&region=us'
-        leagueResponse = requests.get(leagueURL)
-        leagueResponse.raise_for_status()  # Raises an error for bad responses
-        leagueData = leagueResponse.json()  # Parse JSON response
-        tournURLLatest = leagueData['items'][0]['$ref']
+        tourn_league = self.controller.tournament_league.get().lower()
+        l_url = f"http://sports.core.api.espn.com/v2/sports/golf/leagues/{tourn_league}/events?lang=en&region=us"
+        l_resp = requests.get(l_url)
+        l_resp.raise_for_status()  # Raises an error for bad responses
+        l_dat = l_resp.json()  # Parse JSON response
+        t_url = l_dat['items'][0]['$ref']
+        add_session_entry(f"Successfully fetched latest tournament URL using ESPN API.")
         try:
-            tournResponse = requests.get(tournURLLatest)
-            tournResponse.raise_for_status()  # Raises an error for bad responses
-            tournData = tournResponse.json()  # Parse JSON response
-            tournID = tournData['id']
-            tournFullName = tournData['name']
+            t_resp = requests.get(t_url)
+            t_resp.raise_for_status()  # Raises an error for bad responses
+            t_dat = t_resp.json()  # Parse JSON response
+            t_id = t_dat['id']
+            t_name = t_dat['name']
+            add_session_entry(f"Successfully fetched latest tournament data for {t_id}: {t_name} using ESPN API.")
         except Exception as e:
             failMsg = "ESPN API error: Latest tournament fetch failed." + f" Details: {e}"
             add_session_entry(failMsg)
@@ -100,65 +103,63 @@ def latest_tournament(self):
         messagebox.showwarning("Error", failMsg)
         
     # Update the global controller variables
-    self.controller.tournament_name.set(tournFullName)
-    self.controller.tournament_id.set(tournID)
+    self.controller.tournament_name.set(t_name)
+    self.controller.tournament_id.set(t_id)
     self.controller.current_round.set(0) # Default to round 0 for latest
 
-def fetch_athlete_data(self):
+def fetch_athlete_data(t_league, t_id, t_name):
     # Perform API Call to ESPN to get tournament details including competitors and their IDs
     try:
-        tournURL = 'http://sports.core.api.espn.com/v2/sports/golf/leagues/' + self.controller.tournament_league.get().lower() + '/events/' + self.controller.tournament_id.get() + '/competitions/' + self.controller.tournament_id.get() + '?lang=en&region=us'
-        tournResponse = requests.get(tournURL)
-        tournResponse.raise_for_status()  # Raises an error for bad responses
+        t_url = f"http://sports.core.api.espn.com/v2/sports/golf/leagues/{t_league}/events/{t_id}/competitions/{t_id}?lang=en&region=us"
+        t_resp = requests.get(t_url)
+        t_resp.raise_for_status()  # Raises an error for bad responses
+        t_dat = t_resp.json()  # Parse JSON response
+        t_year = t_dat["date"][:4] # Grabs the year from the tournament date field
+        add_session_entry(f"Successfully called ESPN API at {t_url} for athlete data.")
+
     except Exception as e:
-        failMsg = f"ESPN API error: Athlete data call  at {tournURL} failed. Details: {e}"
+        failMsg = f"ESPN API error: Athlete data call  at {t_url} failed. Details: {e}"
         add_session_entry(failMsg)
         messagebox.showwarning("Error", failMsg)
-    tournData = tournResponse.json()  # Parse JSON response
-    add_session_entry(f"Successfully called ESPN API at {tournURL} for athlete data.")
 
     # Loop through for all competitors to fetch their order number and athlete ID required to fetch individual score details
-    i = 0
-    athleteDict = []
-    try:
-        while i < len(tournData['competitors']):
-            athleteOrder = tournData['competitors'][i]['order']
-            athleteID = int(tournData['competitors'][i]['id'])
+    # t_year = str(date.today().year)
+    # swap the above for a date parse - field in t_url json response date
+    a_dict = []
+    for competitor in t_dat['competitors']:
+        a_id = int(competitor['id'])
+        a_url = f"http://sports.core.api.espn.com/v2/sports/golf/leagues/{t_league}/seasons/{t_year}/athletes/{a_id}?lang=en&region=us"
 
-            # Fetch Athlete Name
-            athleteURL = 'http://sports.core.api.espn.com/v2/sports/golf/leagues/' + self.controller.tournament_league.get().lower() + '/seasons/' + str(date.today().year) + '/athletes/' + str(athleteID) + '?lang=en&region=us'
-            athleteResponse = requests.get(athleteURL)
-            athleteResponse.raise_for_status()  # Raises an error for bad responses
-            athleteData = athleteResponse.json()  # Parse JSON response
-            athleteName = athleteData['displayName']
+        try:
+            a_resp = requests.get(a_url)
+            a_resp.raise_for_status()  # Raises an error for bad responses
+            a_dat = a_resp.json()  # Parse JSON response
 
-            athleteInfo = {
-                'order': athleteOrder,
-                'id': athleteID,
-                'name': athleteName
-            }
-            athleteDict.append(athleteInfo)
-            # print('Competitor fetch loop ' + str(i+1) + ' completed for ' + athleteName + '.')
-            i = i + 1
-        add_session_entry(f"Successfully parsed athlete data for {len(athleteDict)} competitors.")
-    except Exception as e:
-        failMsg = f"ESPN API error: Athlete data parsing failed after {i} loops Details: {e}"
-        add_session_entry(failMsg)
-        messagebox.showwarning("Error", failMsg)
+            a_dict.append({
+                'order': competitor['order'],
+                'id': a_id,
+                'name': a_dat['displayName']
+            })
+
+            add_session_entry(f"Successfully fetched athlete data for {a_dat['displayName']} at {a_url}.")
+        except Exception as e:
+            failMsg = f"ESPN API error: Athlete data call at {a_url} failed. Details: {e}"
+            add_session_entry(failMsg)
+            messagebox.showwarning("Error", failMsg)
     
     # Write out to storage
     try:
         # Loads tournament data from tourns.json into a Pandas DataFrame and updates the dropdown list
         current_dir = Path(__file__).resolve().parent
         project_root = current_dir.parent.parent
-        tourn_dir = project_root / "data" /self.controller.tournament_id.get()
-        tourn_dir.mkdir(exist_ok=True) # Ensure logs directory exists
-        athlete_file = tourn_dir / "athletes.json"
-        with open(athlete_file, 'w') as f:
-            json.dump(athleteDict, f)
+        t_dir = project_root / "data" / t_id
+        t_dir.mkdir(exist_ok=True) # Ensure logs directory exists
+        a_file = t_dir / "athletes.json"
+        with open(a_file, 'w') as f:
+            json.dump(a_dict, f)
         # Sleep just to give a buffer between the write and read actions
         # time.sleep(2)
-        add_session_entry(f"Successfully wrote athlete data to file for tournament {self.controller.tournament_name.get()}.")
-        messagebox.showinfo("Success", f"Successfully fetched and stored athlete data for {len(athleteDict)} competitors in the {self.controller.tournament_league.get()} {self.controller.tournament_name.get()}.")
+        add_session_entry(f"Successfully wrote athlete data to file for tournament {t_name}.")
+        messagebox.showinfo("Success", f"Successfully fetched and stored athlete data for {len(a_dict)} competitors in {t_league.upper()}: {t_name}.")
     except Exception as e:
-        add_session_entry(f"Error writing athlete data to file for tournament {self.controller.tournament_name.get()}. Details: {e}")
+        add_session_entry(f"Error writing athlete data to file for tournament {t_name}. Details: {e}")
