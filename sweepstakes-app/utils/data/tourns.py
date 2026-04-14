@@ -4,8 +4,6 @@ import pandas as pd
 import json
 from pathlib import Path
 import requests
-import datetime
-from datetime import date
 
 from utils.data.log import add_session_entry
 
