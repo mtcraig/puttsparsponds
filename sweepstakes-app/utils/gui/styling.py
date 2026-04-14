@@ -20,4 +20,11 @@ def StyledButton(master, text, color, command, width=20):
                      activebackground=BG_MAIN, relief="flat", cursor="hand2",
                      width=width, command=command, padx=10, pady=5)
 
+def StyledFrame(self, label="FRAME TITLE", fgAccent=ACCENT_GREEN):
+    return tk.LabelFrame(self, text=f" {label}",
+                               font=("Segoe UI", 10, "bold"),
+                               bg=BG_CARD, fg=fgAccent,
+                               padx=20, pady=15
+                               )
+
 # End --------------------------------------------------------------------------

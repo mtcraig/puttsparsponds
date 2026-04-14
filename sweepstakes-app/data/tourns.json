@@ -1,15 +1,13 @@
 {
   "401811937": {
     "tournamentLeague": "PGA",
-    "tournamentFullName": "THE PLAYERS Championship",
-    "tournamentName": "THEPLAYERSChampionship",
+    "tournamentName": "THE PLAYERS Championship",
     "lastRound": 1,
     "api": "ESPN"
   },
   "401703521": {
     "tournamentLeague": "PGA",
     "tournamentFullName": "The Open",
-    "tournamentName": "TheOpen",
     "lastRound": 4,
     "api": "ESPN"
   }

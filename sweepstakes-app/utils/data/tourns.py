@@ -21,9 +21,10 @@ def load_tournaments(self):
         df.index = df.index.map(str) # Lock IDs as strings
         
         self.saved_tournaments = []
-        for tourn_id, row in df.iterrows():
-            full_name = row.get('tournamentFullName', 'Unknown Tournament')
-            self.saved_tournaments.append(f"{full_name} ({tourn_id})")
+        for t_id, row in df.iterrows():
+            t_name = row.get('tournamentName', 'Unknown Tournament')
+            t_league = row.get('tournamentLeague', 'Unknown League')
+            self.saved_tournaments.append(f"{t_league}: {t_name} ({t_id})")
         
         self.all_tournaments_df = df
         add_session_entry(f"Loaded {len(df)} tournaments from file.")
