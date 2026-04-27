@@ -9,7 +9,19 @@
 import tkinter as tk
 from utils.gui.styling import *
 from utils.gui import pages
+from pathlib import Path
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+import ctypes
+import sys
+
+def set_taskbar_icon():
+    if sys.platform == "win32":
+        # Any unique string will do; reverse-domain style is standard
+        myappid = 'puttsparsponds.apps.sweepstakes.0001a' 
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+
+set_taskbar_icon()
 
 # Application - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class GolfSweepstakesApp(tk.Tk):
@@ -24,8 +36,11 @@ class GolfSweepstakesApp(tk.Tk):
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
         # Window Header - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        asset_dir = Path(__file__).resolve().parent / "assets"
+        ico_file = asset_dir / "icons" / "ppp-ts-25648x48.ico"
+
         try:
-            self.iconbitmap("app_icon.ico") 
+            self.iconbitmap(ico_file) 
         except:
             pass # Skips if file doesn't exist yet
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -43,14 +58,30 @@ class GolfSweepstakesApp(tk.Tk):
         self.header_frame = tk.Frame(self, bg=ACCENT_GREEN, height=100)
         self.header_frame.pack(side="top", fill="x")
         
+        self.header_frame.columnconfigure(0, weight=1) # Left empty space
+        self.header_frame.columnconfigure(3, weight=1) # Right empty space
         # - Logo Placeholder
-        self.logo_label = tk.Label(self.header_frame, text="Putts, Pars & Ponds",
-                                   fg="white", bg=ACCENT_GREEN,
-                                   font=("Helvetica", 20, "italic bold"))
-        self.logo_label.pack(pady=20)
-        # To use a real image: 
-        # self.logo_img = tk.PhotoImage(file="society_logo.png")
+        # self.logo_label = tk.Label(self.header_frame, text="Putts, Pars & Ponds",
+        #                            fg="white", bg=ACCENT_GREEN,
+        #                            font=("Helvetica", 20, "italic bold"))
+        # self.logo_label.pack(pady=20)
+        # # To use a real image: 
+        # self.logo_img = tk.PhotoImage(file=asset_dir / "ppp-ts-128.png")
         # tk.Label(self.header_frame, image=self.logo_img, bg=ACCENT_GREEN).pack()
+        # Image in column 0
+        self.logo_img = tk.PhotoImage(file=asset_dir / "ppp-ts-64.png")
+        self.img_label = tk.Label(self.header_frame, image=self.logo_img, bg=ACCENT_GREEN)
+        self.img_label.grid(row=0, column=0, padx=5, pady=5, sticky="e")
+
+        # Text in column 1
+        self.logo_label = tk.Label(
+            self.header_frame, 
+            text="Sweepstakes Manager",
+            fg="white", 
+            bg=ACCENT_GREEN,
+            font=("Helvetica", 20, "bold")
+        )
+        self.logo_label.grid(row=0, column=1, padx=5, pady=5, sticky="w")
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
         # Pages Setup - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

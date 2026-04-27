@@ -27,8 +27,8 @@ class HomePage(tk.Frame):
         self.all_tournaments_df = pd.DataFrame()
         load_tournaments(self)
 
-        tk.Label(self, text="🏆 Sweepstakes Manager",
-                       font=("Segoe UI", 22, "bold"), 
+        tk.Label(self, text="🏆 Tournament Management",
+                       font=("Segoe UI", 18, "bold"), 
                        bg=BG_CARD, fg=ACCENT_GREEN
                        ).pack(pady=20)
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
